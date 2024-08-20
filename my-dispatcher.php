@@ -11,8 +11,8 @@ class Dispatcher
         // login route
         add_action('login_form_login', array($this, 'oauth_authenticate'), 1); // oauth authenticate
         add_action('login_form_login', array($this, 'redirect_to_oauth_login'), 2); // redirect to OAuth login page
-        add_action('login_form_login', array($this, 'redirect_to_custom_login'), 3); // redirect to custom login form
-        add_filter('authenticate', array($this, 'maybe_redirect_at_authenticate'), 101, 1); // mayber redirect after username-password login
+        add_action('login_form_login', array($this, 'redirect_to_custom_login_page'), 3); // redirect to custom login form
+        add_filter('authenticate', array($this, 'maybe_redirect_at_authenticate'), 101, 1); // maybe redirect after username-password login
 
         // register
         add_action('login_form_register', array($this, 'do_register_user'));
@@ -26,7 +26,6 @@ class Dispatcher
         // lost password
         add_action('login_form_lostpassword', array($this, 'redirect_to_custom_lostpassword'));
         add_action('login_form_lostpassword', array($this, 'do_password_lost'));
-        
 
         // reset pwd
         add_action('login_form_rp', array($this, 'redirect_to_custom_password_reset'));
@@ -40,9 +39,8 @@ class Dispatcher
 
         if (
             in_array($plugin_path, wp_get_active_and_valid_plugins())
-            || in_array($plugin_path, wp_get_active_network_plugins())
+            || (function_exists('wp_get_active_network_plugins') && in_array($plugin_path, wp_get_active_network_plugins()))
         ) {
-
             // Custom code here. WooCommerce is active, however it has not 
             // necessarily initialized (when that is important, consider
             // using the `woocommerce_init` action).
@@ -59,7 +57,7 @@ class Dispatcher
     /** 
      * Redirect the user to the custom login page instead of wp-login.php. 
      */
-    function redirect_to_custom_login()
+    function redirect_to_custom_login_page()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'GET' && !isset($_GET['code'])) {
             $redirect_to = isset($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : null;

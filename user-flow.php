@@ -85,3 +85,5 @@ $my_administration_panel = new Administration_Panel();
 
 //   // setting provider email
 // add_action('phpmailer_init', 'mailtrap');
+
+
